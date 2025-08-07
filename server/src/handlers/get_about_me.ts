@@ -1,15 +1,25 @@
 
+import { db } from '../db';
+import { aboutMeTable } from '../db/schema';
 import { type AboutMe } from '../schema';
 
 export const getAboutMe = async (): Promise<AboutMe | null> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching the about me information from the database.
-    // Since there should be only one about me record, we return the first one or null if none exists.
-    return Promise.resolve({
-        id: 1,
-        title: "Full Stack Developer",
-        description: "Passionate developer with experience in modern web technologies...",
-        profile_image_url: null,
-        updated_at: new Date()
-    } as AboutMe);
-}
+  try {
+    // Get the first (and should be only) about me record
+    const results = await db.select()
+      .from(aboutMeTable)
+      .limit(1)
+      .execute();
+
+    // Return null if no record exists
+    if (results.length === 0) {
+      return null;
+    }
+
+    // Return the first record
+    return results[0];
+  } catch (error) {
+    console.error('Failed to get about me information:', error);
+    throw error;
+  }
+};
